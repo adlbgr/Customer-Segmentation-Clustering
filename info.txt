@@ -1,0 +1,130 @@
+## İş Hedefi
+
+Bir şirket, veri bilimi ekibinden müşteri tabanını segmentlere ayırmasını istemiştir. Bu segmentasyon, hedefli pazarlama ve müşteri satın alma alışkanlıklarını anlamak için yapılacaktır.
+
+## Veri Anlayışı
+
+Veri kümesi, gerçek bir veri kümesine benzemekte ve benzer zorluklara sahiptir.
+
+### Hedefler:
+1. Bu projenin ilk adımı, veri kümesini içe aktarmak ve üç veri çerçevesi oluşturmaktır:
+   - **Customer (Müşteri)**
+   - **Products (Ürünler)**
+   - **Orders (Siparişler)**
+   
+2. Üç veri çerçevesini bir SQLite veritabanına ekleyin.
+3. Veritabanından tabloları içe aktarın ve tek bir veri çerçevesinde birleştirin.
+4. Müşterileri KMeans kullanarak segmentlere ayırın ve segmentlerin özelliklerini vurgulayın.
+5. Müşteri segmentlerinin sayısının seçimini gerekçelendirin.
+6. RFM tablosu oluşturun (Recency - Yenilik, Frequency - Sıklık ve Monetary - Parasal Değer).
+
+### CSV Dosyalarını Okuma
+CSV dosyalarını şu kod satırı ile okuyabilirsiniz:
+```python
+df = pd.read_csv("PBL5recommendationdata.csv", encoding="latin-1")
+```
+
+### RFM Analizi
+RFM analizi, müşterileri en son alışverişlerinin yeniliği, alışveriş sıklığı ve toplam parasal değeri temelinde nicel olarak derecelendirmek ve gruplandırmak için kullanılan bir pazarlama tekniğidir. Bu analiz, en iyi müşterileri belirlemek ve hedefli pazarlama kampanyaları yürütmek için kullanılır. Sistem, bu faktörlere dayanarak her müşteriye sayısal puanlar atar ve objektif bir analiz sağlar. RFM analizi, "İşinizin %80'i müşterilerinizin %20'sinden gelir" pazarlama deyişine dayanır.
+
+### RFM Tablosu Örneği
+```python
+import pandas as pd
+import datetime as dt
+
+# Örnek bir işlem DataFrame'i oluşturun
+data = {
+    'CustomerID': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    'PurchaseDate': [
+        '2023-08-01', '2023-08-03', '2023-08-02', '2023-08-01', '2023-07-25',
+        '2023-07-15', '2023-08-05', '2023-08-04', '2023-08-06', '2023-07-28'
+    ],
+    'Amount': [100, 150, 50, 200, 30, 120, 80, 300, 50, 75]
+}
+df = pd.DataFrame(data)
+df['PurchaseDate'] = pd.to_datetime(df['PurchaseDate'])
+
+# Yenilik, sıklık ve parasal değerleri hesaplayın
+now = pd.to_datetime('2023-08-28')
+recency = now - df.groupby('CustomerID')['PurchaseDate'].max()
+recency = recency.dt.days
+frequency = df.groupby('CustomerID')['PurchaseDate'].count()
+monetary = df.groupby('CustomerID')['Amount'].sum()
+
+# Bir RFM DataFrame'i oluşturun
+rfm_df = pd.DataFrame({
+    'Recency': recency,
+    'Frequency': frequency,
+    'Monetary': monetary
+})
+
+# RFM DataFrame'ini yazdırın
+print(rfm_df)
+```
+
+### RFM Analizi Örneği
+Daha fazla bilgi ve örnek için bu bağlantıya göz atabilirsiniz: [RFM Analysis Using Python](https://thecleverprogrammer.com/2023/06/12/rfm-analysis-using-python/)
+
+--------------
+Business Objective
+A company has asked its data science team to segment its customer base in order to help targeted marketing and understand their buying habits.
+Data Understanding
+The dataset resembles a real dataset and has many of the same challenges.
+Objectives:
+▪ The first step for this project is to import the dataset and create three data
+frames
+o Customer
+o Products
+o Orders
+▪ Insert the three data frames in a SQLite database
+▪ Import the tables from the database and merge them into a single data frame
+▪ Segment the customers using KMeans and highlight the characteristics of the segments
+▪ Selection of number of customers segments should be justified
+▪ Create RFM table ( Recency, Frequency and Money)
+
+-Read CSV files with this line of code:
+
+df = pd.read_csv("PBL5recommendationdata.csv", encoding = "latin-1")
+
+RFM analysis is a marketing technique used to quantitatively rank and
+group customers based on the recency, frequency and monetary total of
+their recent transactions to identify the best customers and perform
+targeted marketing campaigns. The system assigns each customer numerical
+scores based on these factors to provide an objective analysis. RFM
+analysis is based on the marketing adage that "80% of your business
+comes from 20% of your customers."
+Example of RFM table
+import pandas as pd
+import datetime as dt
+
+# Create a sample transaction DataFrame
+data = {
+'CustomerID': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+'PurchaseDate': [
+'2023-08-01', '2023-08-03', '2023-08-02', '2023-08-01', '2023-07-25',
+'2023-07-15', '2023-08-05', '2023-08-04', '2023-08-06', '2023-07-28'
+],
+'Amount': [100, 150, 50, 200, 30, 120, 80, 300, 50, 75]
+}
+df = pd.DataFrame(data)
+df['PurchaseDate'] = pd.to_datetime(df['PurchaseDate'])
+
+# Calculate recency, frequency, and monetary values
+now = pd.to_datetime('2023-08-28')
+recency = now - df.groupby('CustomerID')['PurchaseDate'].max()
+recency = recency.dt.days
+frequency = df.groupby('CustomerID')['PurchaseDate'].count()
+monetary = df.groupby('CustomerID')['Amount'].sum()
+
+# Create an RFM DataFrame
+rfm_df = pd.DataFrame({
+'Recency': recency,
+'Frequency': frequency,
+'Monetary': monetary
+})
+
+# Print the RFM DataFrame
+print(rfm_df)
+
+RFM Example
+https://thecleverprogrammer.com/2023/06/12/rfm-analysis-using-python/
